@@ -368,6 +368,7 @@ const AllCampaigns = () => {
                     <CampaignCard 
                       key={campaign.id} 
                       {...campaign} 
+                      creator={campaign.creator}
                       onClick={() => handleCampaignClick(campaign)}
                     />
                   ))}

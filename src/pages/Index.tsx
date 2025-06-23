@@ -247,6 +247,7 @@ const Index = () => {
                     <CampaignCard 
                       key={campaign.id} 
                       {...campaign} 
+                      creator={campaign.creator}
                       onClick={() => handleCampaignClick(campaign)}
                     />
                   ))}

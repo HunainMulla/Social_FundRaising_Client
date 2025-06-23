@@ -12,6 +12,7 @@ import RegisterPage from "./pages/Register";
 import AdminPage from "./pages/Admin";
 import CreateCampaign from "./pages/CreateCampaign";
 import AllCampaigns from "./pages/AllCampaigns";
+import Payment from "./pages/Payment";
 import NotFound from "./pages/NotFound";
 import Test from "./pages/Test";
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/create-campaign" element={<CreateCampaign />} />
+          <Route path="/payment/:campaignId" element={<Payment />} />
           <Route path="/login-user" element={<Test />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -2,6 +2,7 @@ import { Heart, Share2, MessageCircle, Clock, MapPin } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { useNavigate } from "react-router-dom";
 
 interface CampaignCardProps {
   id: string;
@@ -14,10 +15,14 @@ interface CampaignCardProps {
   location: string;
   category: string;
   backers: number;
+  creator?: {
+    email: string;
+  };
   onClick?: () => void;
 }
 
 const CampaignCard = ({ 
+  id,
   title, 
   description, 
   image, 
@@ -27,8 +32,10 @@ const CampaignCard = ({
   location, 
   category, 
   backers,
+  creator,
   onClick
 }: CampaignCardProps) => {
+  const navigate = useNavigate();
   const progress = (raised / goal) * 100;
   
   return (
@@ -95,7 +102,11 @@ const CampaignCard = ({
               className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               onClick={(e) => {
                 e.stopPropagation();
-                // Handle back project action
+                if (creator?.email) {
+                  navigate(`/payment/${id}?creator=${encodeURIComponent(creator.email)}`);
+                } else {
+                  alert('Creator information not available');
+                }
               }}
             >
               Back This Project

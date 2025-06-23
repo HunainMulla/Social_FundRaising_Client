@@ -1,21 +1,24 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Label } from "../components/ui/label";
 import { Badge } from "../components/ui/badge";
+import { Alert, AlertDescription } from "../components/ui/alert";
 import { 
   CreditCard, 
-  Lock, 
-  Shield, 
   CheckCircle, 
   ArrowLeft,
   Heart,
-  DollarSign,
   Calendar,
-  Users
+  Users,
+  AlertCircle
 } from "lucide-react";
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import PaymentForm from '../components/PaymentForm';
+
+// Initialize Stripe
+const stripePromise = loadStripe('pk_test_51Qki3JCTFACjR68uzZq4NRHk8iFMm0OHTmm2qG68n22Rw89QmPNa2tPuThN96AQpLO7puzEGuqJo5xVkGKVeaIL3008HZ3EOjv');
 
 interface Campaign {
   id: string;
@@ -29,34 +32,23 @@ interface Campaign {
   backers: number;
   creator: {
     name: string;
+    email: string;
     avatar: string;
   };
 }
 
-interface PaymentForm {
-  amount: string;
-  cardNumber: string;
-  cardHolder: string;
-  expiryDate: string;
-  cvv: string;
-  message: string;
-}
-
 const PaymentPage = () => {
   const { campaignId } = useParams<{ campaignId: string }>();
+  const [searchParams] = useSearchParams();
+  const creatorEmail = searchParams.get('creator');
   const navigate = useNavigate();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
-  const [formData, setFormData] = useState<PaymentForm>({
-    amount: "",
-    cardNumber: "",
-    cardHolder: "",
-    expiryDate: "",
-    cvv: "",
-    message: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [amount, setAmount] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
   const [user, setUser] = useState<any>(null);
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     // Check if user is logged in
@@ -67,162 +59,198 @@ const PaymentPage = () => {
     }
     setUser(JSON.parse(userData));
 
-    // Fetch campaign data
-    fetchCampaignData();
-  }, [campaignId, navigate]);
-
-  const fetchCampaignData = async () => {
-    try {
-      // In a real app, this would be an API call
-      // For demo, using mock data
-      const mockCampaign: Campaign = {
-        id: campaignId || "1",
-        title: "Community Garden Project",
-        description: "Help us create a beautiful community garden that will bring neighbors together and provide fresh produce for local families.",
-        image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=800&q=80",
-        category: "Community",
-        goal: 15000,
-        raised: 8750,
-        daysLeft: 23,
-        backers: 156,
-        creator: {
-          name: "Sarah Johnson",
-          avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&w=150&q=80"
-        }
-      };
-      setCampaign(mockCampaign);
-    } catch (error) {
-      console.error('Error fetching campaign:', error);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ""
-      }));
-    }
-  };
-
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    const matches = v.match(/\d{4,16}/g);
-    const match = matches && matches[0] || '';
-    const parts = [];
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
-    if (parts.length) {
-      return parts.join(' ');
-    } else {
-      return v;
-    }
-  };
-
-  const formatExpiryDate = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    if (v.length >= 2) {
-      return v.substring(0, 2) + '/' + v.substring(2, 4);
-    }
-    return v;
-  };
-
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-
-    if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      newErrors.amount = "Please enter a valid amount";
-    }
-
-    if (!formData.cardNumber.replace(/\s/g, '').match(/^\d{16}$/)) {
-      newErrors.cardNumber = "Please enter a valid 16-digit card number";
-    }
-
-    if (!formData.cardHolder.trim()) {
-      newErrors.cardHolder = "Card holder name is required";
-    }
-
-    if (!formData.expiryDate.match(/^\d{2}\/\d{2}$/)) {
-      newErrors.expiryDate = "Please enter a valid expiry date (MM/YY)";
-    }
-
-    if (!formData.cvv.match(/^\d{3,4}$/)) {
-      newErrors.cvv = "Please enter a valid CVV";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
+    // Validate required parameters
+    if (!campaignId || !creatorEmail) {
+      setError("Missing campaign information. Please go back and try again.");
       return;
     }
 
-    setIsLoading(true);
-    
+    // Fetch campaign data
+    fetchCampaignData();
+  }, [campaignId, creatorEmail, navigate]);
+
+  const fetchCampaignData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token');
-      }
-
-      // Prepare payment data
-      const paymentData = {
-        campaignId: campaignId,
-        amount: parseFloat(formData.amount),
-        message: formData.message,
-        paymentMethod: {
-          cardNumber: formData.cardNumber.replace(/\s/g, ''),
-          cardHolder: formData.cardHolder,
-          expiryDate: formData.expiryDate,
-          cvv: formData.cvv
-        }
-      };
-
-      // Simulate API call to payment endpoint
-      const response = await fetch('/api/payments/back-campaign', {
-        method: 'POST',
+      console.log('Fetching campaign data:', { campaignId, creatorEmail });
+      
+      const response = await fetch(`http://localhost:3000/payments/campaign/${campaignId}/${creatorEmail}`, {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(paymentData),
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
 
+      console.log('Response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Payment failed');
+        const errorText = await response.text();
+        console.error('Response error:', errorText);
+        throw new Error(`Failed to fetch campaign data: ${response.status} ${errorText}`);
       }
 
-      // For demo purposes, simulate successful payment
-      alert('Payment successful! Thank you for backing this campaign.');
-      navigate(`/campaign/${campaignId}`);
-      
+      const data = await response.json();
+      console.log('Campaign data received:', data);
+      setCampaign(data);
     } catch (error) {
-      console.error('Payment error:', error);
-      alert('Payment failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+      console.error('Error fetching campaign:', error);
+      setError(`Failed to load campaign data: ${error.message}. Please try again.`);
     }
   };
 
+  const createPaymentIntent = async (amount: number) => {
+    try {
+      const response = await fetch('http://localhost:3000/payments/create-payment-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          amount: amount,
+          campaignId: campaignId,
+          creatorEmail: creatorEmail
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create payment intent');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating payment intent:', error);
+      throw error;
+    }
+  };
+
+  const confirmPayment = async (paymentIntentId: string, amount: number) => {
+    try {
+      const response = await fetch('http://localhost:3000/payments/confirm-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          paymentIntentId: paymentIntentId,
+          campaignId: campaignId,
+          creatorEmail: creatorEmail,
+          amount: amount,
+          message: message
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to confirm payment');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error confirming payment:', error);
+      throw error;
+    }
+  };
+
+  const handlePaymentSubmit = async (paymentMethod: any) => {
+    setIsPaymentProcessing(true);
+    setError("");
+
+    try {
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error('Stripe failed to load');
+      }
+
+      const donationAmount = parseFloat(amount);
+
+      // Create payment intent
+      const { clientSecret, paymentIntentId } = await createPaymentIntent(donationAmount);
+
+      // Confirm the payment
+      const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: paymentMethod.id
+      });
+
+      if (stripeError) {
+        throw new Error(stripeError.message || 'Payment failed');
+      }
+
+      if (paymentIntent?.status === 'succeeded') {
+        // Confirm payment on backend and update campaign
+        const result = await confirmPayment(paymentIntentId, donationAmount);
+        
+        setPaymentSuccess(true);
+        
+        // Update campaign state with new amount
+        if (campaign) {
+          setCampaign(prev => prev ? {
+            ...prev,
+            raised: result.updatedAmount
+          } : null);
+        }
+
+        // Show success message for 3 seconds then redirect
+        setTimeout(() => {
+          navigate(`/campaigns`);
+        }, 3000);
+      }
+
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      setError(error.message || 'Payment failed. Please try again.');
+    } finally {
+      setIsPaymentProcessing(false);
+    }
+  };
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  if (error && !campaign) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8 px-4">
+        <div className="max-w-2xl mx-auto">
+          <Alert className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+          <Button onClick={handleBack} variant="outline">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (!campaign) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading campaign...</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-lg text-gray-600">Loading campaign details...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (paymentSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+        <Card className="w-full max-w-md mx-4">
+          <CardContent className="pt-6 text-center">
+            <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h2>
+            <p className="text-gray-600 mb-4">
+              Thank you for backing "{campaign.title}". Your contribution of ${amount} has been processed successfully.
+            </p>
+            <p className="text-sm text-gray-500">
+              Redirecting to campaigns page...
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -230,81 +258,107 @@ const PaymentPage = () => {
   const progressPercentage = (campaign.raised / campaign.goal) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8 px-4">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
+        <div className="mb-6">
+          <Button 
+            onClick={handleBack}
+            variant="outline" 
             className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Campaign
           </Button>
-          
-          <div className="flex items-center space-x-2 mb-2">
-            <Heart className="h-6 w-6 text-red-500" />
-            <h1 className="text-3xl font-bold text-gray-900">Back This Campaign</h1>
-          </div>
-          <p className="text-gray-600">Support {campaign.creator.name}'s project</p>
+          <h1 className="text-3xl font-bold text-gray-900">Back this project</h1>
+          <p className="text-gray-600 mt-2">
+            Support {campaign.creator.name}'s campaign with a secure payment
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Campaign Summary */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-8">
-              <CardHeader>
-                <CardTitle className="text-xl">Campaign Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <img
-                    src={campaign.image}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Campaign Info */}
+          <div className="space-y-6">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-start space-x-4">
+                  <img 
+                    src={campaign.image} 
                     alt={campaign.title}
-                    className="w-full h-48 object-cover rounded-lg"
+                    className="w-20 h-20 rounded-lg object-cover"
                   />
-                  <div>
+                  <div className="flex-1">
                     <h3 className="font-semibold text-lg mb-2">{campaign.title}</h3>
-                    <p className="text-gray-600 text-sm line-clamp-3">
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                       {campaign.description}
                     </p>
+                    <Badge variant="secondary">{campaign.category}</Badge>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
+            {/* Campaign Progress */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Heart className="h-5 w-5 mr-2 text-red-500" />
+                  Campaign Progress
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Goal</span>
-                    <span className="font-semibold">${campaign.goal.toLocaleString()}</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Raised</span>
-                    <span className="font-semibold text-green-600">
-                      ${campaign.raised.toLocaleString()}
-                    </span>
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-600">Raised</span>
+                      <span className="font-medium">${campaign.raised.toLocaleString()} of ${campaign.goal.toLocaleString()}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div 
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                      ></div>
+                    </div>
+                    <div className="text-center text-sm text-gray-500 mt-2">
+                      {progressPercentage.toFixed(1)}% funded
+                    </div>
                   </div>
 
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full"
-                      style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-                    ></div>
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-1">
+                        <Users className="h-4 w-4 mr-1 text-gray-500" />
+                        <span className="text-2xl font-bold text-gray-900">{campaign.backers}</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Backers</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-1">
+                        <Calendar className="h-4 w-4 mr-1 text-gray-500" />
+                        <span className="text-2xl font-bold text-gray-900">{campaign.daysLeft}</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Days left</p>
+                    </div>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
 
-                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div>
-                      <div className="flex items-center justify-center mb-1">
-                        <Calendar className="h-4 w-4 text-gray-500 mr-1" />
-                      </div>
-                      <p className="text-sm text-gray-600">{campaign.daysLeft} days left</p>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-center mb-1">
-                        <Users className="h-4 w-4 text-gray-500 mr-1" />
-                      </div>
-                      <p className="text-sm text-gray-600">{campaign.backers} backers</p>
-                    </div>
+            {/* Creator Info */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Campaign Creator</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center space-x-4">
+                  <img 
+                    src={campaign.creator.avatar} 
+                    alt={campaign.creator.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <h4 className="font-medium">{campaign.creator.name}</h4>
+                    <p className="text-sm text-gray-600">{campaign.creator.email}</p>
                   </div>
                 </div>
               </CardContent>
@@ -312,173 +366,26 @@ const PaymentPage = () => {
           </div>
 
           {/* Payment Form */}
-          <div className="lg:col-span-2">
-            <Card>
+          <div>
+            <Card className="sticky top-8">
               <CardHeader>
-                <CardTitle className="text-xl">Payment Details</CardTitle>
-                <p className="text-gray-600">Secure payment powered by Stripe</p>
+                <CardTitle className="flex items-center">
+                  <CreditCard className="h-5 w-5 mr-2" />
+                  Back this project
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Amount */}
-                  <div className="space-y-2">
-                    <Label htmlFor="amount">Backing Amount</Label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                      <Input
-                        id="amount"
-                        name="amount"
-                        type="number"
-                        placeholder="0.00"
-                        value={formData.amount}
-                        onChange={handleInputChange}
-                        className={`pl-10 ${errors.amount ? 'border-red-500' : ''}`}
-                        disabled={isLoading}
-                        min="1"
-                        step="0.01"
-                      />
-                    </div>
-                    {errors.amount && (
-                      <p className="text-red-500 text-sm">{errors.amount}</p>
-                    )}
-                  </div>
-
-                  {/* Message */}
-                  <div className="space-y-2">
-                    <Label htmlFor="message">Message to Creator (Optional)</Label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      placeholder="Leave a message of support..."
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      rows={3}
-                      disabled={isLoading}
-                    />
-                  </div>
-
-                  {/* Card Details */}
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <CreditCard className="h-5 w-5 text-gray-500" />
-                      <h3 className="font-semibold">Card Information</h3>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="cardNumber">Card Number</Label>
-                        <Input
-                          id="cardNumber"
-                          name="cardNumber"
-                          type="text"
-                          placeholder="1234 5678 9012 3456"
-                          value={formData.cardNumber}
-                          onChange={(e) => {
-                            e.target.value = formatCardNumber(e.target.value);
-                            handleInputChange(e);
-                          }}
-                          className={errors.cardNumber ? 'border-red-500' : ''}
-                          disabled={isLoading}
-                          maxLength={19}
-                        />
-                        {errors.cardNumber && (
-                          <p className="text-red-500 text-sm">{errors.cardNumber}</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="cardHolder">Card Holder Name</Label>
-                        <Input
-                          id="cardHolder"
-                          name="cardHolder"
-                          type="text"
-                          placeholder="John Doe"
-                          value={formData.cardHolder}
-                          onChange={handleInputChange}
-                          className={errors.cardHolder ? 'border-red-500' : ''}
-                          disabled={isLoading}
-                        />
-                        {errors.cardHolder && (
-                          <p className="text-red-500 text-sm">{errors.cardHolder}</p>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="expiryDate">Expiry Date</Label>
-                          <Input
-                            id="expiryDate"
-                            name="expiryDate"
-                            type="text"
-                            placeholder="MM/YY"
-                            value={formData.expiryDate}
-                            onChange={(e) => {
-                              e.target.value = formatExpiryDate(e.target.value);
-                              handleInputChange(e);
-                            }}
-                            className={errors.expiryDate ? 'border-red-500' : ''}
-                            disabled={isLoading}
-                            maxLength={5}
-                          />
-                          {errors.expiryDate && (
-                            <p className="text-red-500 text-sm">{errors.expiryDate}</p>
-                          )}
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="cvv">CVV</Label>
-                          <Input
-                            id="cvv"
-                            name="cvv"
-                            type="text"
-                            placeholder="123"
-                            value={formData.cvv}
-                            onChange={handleInputChange}
-                            className={errors.cvv ? 'border-red-500' : ''}
-                            disabled={isLoading}
-                            maxLength={4}
-                          />
-                          {errors.cvv && (
-                            <p className="text-red-500 text-sm">{errors.cvv}</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Security Notice */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-start space-x-3">
-                      <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-blue-900">Secure Payment</h4>
-                        <p className="text-sm text-blue-700 mt-1">
-                          Your payment information is encrypted and secure. We use industry-standard SSL encryption to protect your data.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Processing Payment...</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-2">
-                        <Lock className="h-4 w-4" />
-                        <span>Complete Payment</span>
-                      </div>
-                    )}
-                  </Button>
-                </form>
+                <Elements stripe={stripePromise}>
+                  <PaymentForm
+                    amount={amount}
+                    message={message}
+                    onAmountChange={setAmount}
+                    onMessageChange={setMessage}
+                    onSubmit={handlePaymentSubmit}
+                    isProcessing={isPaymentProcessing}
+                    error={error}
+                  />
+                </Elements>
               </CardContent>
             </Card>
           </div>

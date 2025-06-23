@@ -3,6 +3,7 @@ import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { useNavigate } from "react-router-dom";
 
 interface CampaignCreator {
   name: string;
@@ -35,6 +36,8 @@ interface CampaignDetailModalProps {
 }
 
 const CampaignDetailModal = ({ isOpen, onClose, campaign }: CampaignDetailModalProps) => {
+  const navigate = useNavigate();
+  
   if (!campaign) return null;
 
   const progress = (campaign.raised / campaign.goal) * 100;
@@ -114,7 +117,13 @@ const CampaignDetailModal = ({ isOpen, onClose, campaign }: CampaignDetailModalP
                           {campaign.daysLeft} days left
                         </div>
 
-                        <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-sm md:text-lg py-2 md:py-3">
+                        <Button 
+                          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-sm md:text-lg py-2 md:py-3"
+                          onClick={() => {
+                            navigate(`/payment/${campaign.id}?creator=${encodeURIComponent(campaign.creator.email)}`);
+                            onClose();
+                          }}
+                        >
                           Back This Project
                         </Button>
 
