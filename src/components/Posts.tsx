@@ -86,6 +86,28 @@ const Posts = ({ refreshTrigger, searchQuery = "", selectedCategory = "All", sor
     fetchPosts();
   }, [refreshTrigger]);
 
+  // Filter and sort posts
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = !searchQuery || 
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.authorName.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case "popular":
+        return b.likes - a.likes;
+      case "comments":
+        return b.comments - a.comments;
+      case "recent":
+      default:
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  });
+
   // Handle like/unlike post
   const handleLike = async (postId: string) => {
     const token = localStorage.getItem("token");
@@ -312,7 +334,7 @@ const Posts = ({ refreshTrigger, searchQuery = "", selectedCategory = "All", sor
     );
   }
 
-  if (posts.length === 0) {
+  if (filteredPosts.length === 0 && posts.length === 0) {
     return (
       <div className="max-w-md mx-auto space-y-6">
         <div className="text-center py-8">
@@ -324,9 +346,21 @@ const Posts = ({ refreshTrigger, searchQuery = "", selectedCategory = "All", sor
     );
   }
 
+  if (filteredPosts.length === 0 && posts.length > 0) {
+    return (
+      <div className="max-w-md mx-auto space-y-6">
+        <div className="text-center py-8">
+          <MessageCircle className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No posts match your filters</h3>
+          <p className="text-gray-600 text-sm">Try changing your search or category filter.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-md mx-auto space-y-6">
-      {posts.map((post) => (
+      {filteredPosts.map((post) => (
         <Card key={post.id} className="overflow-hidden">
           {/* Post Header */}
           <div className="flex items-center justify-between p-4">

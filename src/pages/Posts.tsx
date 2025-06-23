@@ -11,8 +11,15 @@ import { Search, Filter, TrendingUp, Users, Calendar, Plus } from "lucide-react"
 const PostsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sortBy, setSortBy] = useState("recent");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [stats, setStats] = useState({
+    activePosts: 0,
+    activeUsers: 0,
+    postsThisMonth: 0,
+    isLoading: true
+  });
 
   const categories = [
     "All",
@@ -27,6 +34,30 @@ const PostsPage = () => {
     "Technology",
     "Sports"
   ];
+
+  // Fetch stats from API
+  const fetchStats = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/posts/stats");
+      if (response.ok) {
+        const data = await response.json();
+        setStats({
+          activePosts: data.activePosts || 0,
+          activeUsers: data.activeUsers || 0,
+          postsThisMonth: data.postsThisMonth || 0,
+          isLoading: false
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+      setStats(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  // Fetch stats on component mount
+  useEffect(() => {
+    fetchStats();
+  }, [refreshTrigger]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -83,7 +114,7 @@ const PostsPage = () => {
 
               {/* Sort Options */}
               <div>
-                <Select defaultValue="recent">
+                <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -114,7 +145,12 @@ const PostsPage = () => {
               )}
 
               {/* Posts List */}
-              <Posts refreshTrigger={refreshTrigger} />
+              <Posts 
+                refreshTrigger={refreshTrigger}
+                searchQuery={searchQuery}
+                selectedCategory={selectedCategory}
+                sortBy={sortBy}
+              />
             </div>
 
             {/* Sidebar */}
@@ -129,21 +165,27 @@ const PostsPage = () => {
                         <TrendingUp className="h-5 w-5 text-blue-600 mr-2" />
                         <span className="text-sm text-gray-600">Active Posts</span>
                       </div>
-                      <span className="font-semibold">Loading...</span>
+                      <span className="font-semibold">
+                        {stats.isLoading ? "Loading..." : stats.activePosts}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <Users className="h-5 w-5 text-green-600 mr-2" />
                         <span className="text-sm text-gray-600">Active Users</span>
                       </div>
-                      <span className="font-semibold">Loading...</span>
+                      <span className="font-semibold">
+                        {stats.isLoading ? "Loading..." : stats.activeUsers}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <Calendar className="h-5 w-5 text-purple-600 mr-2" />
                         <span className="text-sm text-gray-600">This Month</span>
                       </div>
-                      <span className="font-semibold">Loading...</span>
+                      <span className="font-semibold">
+                        {stats.isLoading ? "Loading..." : stats.postsThisMonth}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -191,7 +233,10 @@ const PostsPage = () => {
                     <Button 
                       variant="outline" 
                       className="w-full justify-start"
-                      onClick={() => setRefreshTrigger(prev => prev + 1)}
+                      onClick={() => {
+                        setRefreshTrigger(prev => prev + 1);
+                        fetchStats();
+                      }}
                     >
                       <Calendar className="h-4 w-4 mr-2" />
                       Refresh Feed
