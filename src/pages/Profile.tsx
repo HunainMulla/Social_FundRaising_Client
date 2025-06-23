@@ -114,7 +114,7 @@ const ProfilePage = () => {
             joinedDate: data.user.createdAt ? new Date(data.user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "Unknown",
             totalCampaigns: data.user.campaigns ? data.user.campaigns.length : 0,
             totalRaised: data.user.campaigns ? data.user.campaigns.reduce((sum, campaign) => sum + (campaign.currentAmount || 0), 0) : 0,
-            totalBackers: data.user.totalBackers || 0
+            totalBackers: data.user.campaigns ? data.user.campaigns.reduce((sum, campaign) => sum + (campaign.backers ? campaign.backers.length : 0), 0) : 0
           };
           
           setUser(userData);
@@ -130,20 +130,27 @@ const ProfilePage = () => {
 
           // Update campaigns if they exist - use actual _id from backend
           if (data.user.campaigns && data.user.campaigns.length > 0) {
-            const campaigns = data.user.campaigns.map((campaign: any) => ({
-              id: campaign._id, // Use actual MongoDB _id
-              title: campaign.name || "Untitled Campaign",
-              description: campaign.description || "No description provided",
-              image: campaign.image || "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
-              raised: campaign.currentAmount || 0,
-              goal: campaign.amount || 0,
-              daysLeft: 30, // You might want to calculate this based on campaign dates
-              location: campaign.location || "Location not specified",
-              category: campaign.category || "General",
-              backers: 0, // This might need to come from a different field
-              status: campaign.currentAmount >= campaign.amount ? "completed" : "active",
-              createdAt: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-            }));
+            const campaigns = data.user.campaigns.map((campaign: any) => {
+              // Calculate days left
+              const endDate = campaign.endDate ? new Date(campaign.endDate) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+              const currentDate = new Date();
+              const daysLeft = Math.max(0, Math.ceil((endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
+              
+              return {
+                id: campaign._id, // Use actual MongoDB _id
+                title: campaign.name || "Untitled Campaign",
+                description: campaign.description || "No description provided",
+                image: campaign.image || "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
+                raised: campaign.currentAmount || 0,
+                goal: campaign.amount || 0,
+                daysLeft: daysLeft,
+                location: campaign.location || "Location not specified",
+                category: campaign.category || "General",
+                backers: campaign.backers ? campaign.backers.length : 0, // Count actual backers
+                status: campaign.currentAmount >= campaign.amount ? "completed" : "active",
+                createdAt: campaign.startDate ? new Date(campaign.startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+              };
+            });
             setUserCampaigns(campaigns);
           }
         }

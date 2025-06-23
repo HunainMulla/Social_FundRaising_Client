@@ -32,9 +32,12 @@ interface Post {
 
 interface PostsProps {
   refreshTrigger?: number;
+  searchQuery?: string;
+  selectedCategory?: string;
+  sortBy?: string;
 }
 
-const Posts = ({ refreshTrigger }: PostsProps) => {
+const Posts = ({ refreshTrigger, searchQuery = "", selectedCategory = "All", sortBy = "recent" }: PostsProps) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
