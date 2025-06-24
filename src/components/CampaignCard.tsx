@@ -19,6 +19,7 @@ interface CampaignCardProps {
     email: string;
   };
   onClick?: () => void;
+  endDate?: string;
 }
 
 const CampaignCard = ({ 
@@ -33,10 +34,21 @@ const CampaignCard = ({
   category, 
   backers,
   creator,
-  onClick
+  onClick,
+  endDate
 }: CampaignCardProps) => {
   const navigate = useNavigate();
   const progress = (raised / goal) * 100;
+  
+  const isCampaignEnded = endDate ? new Date(endDate) < new Date() : false;
+  const isGoalAchieved = raised >= goal;
+  const isDisabled = isGoalAchieved || isCampaignEnded;
+  
+  const getButtonText = () => {
+    if (isGoalAchieved) return "Goal Achieved";
+    if (isCampaignEnded) return "Campaign Ended";
+    return "Back This Project";
+  };
   
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer" onClick={onClick}>
@@ -53,6 +65,11 @@ const CampaignCard = ({
         <Badge className="absolute top-3 left-3 bg-white/90 text-gray-700 hover:bg-white">
           {category}
         </Badge>
+        {isCampaignEnded && (
+          <Badge className="absolute top-3 right-3 bg-red-500 text-white">
+            Ended
+          </Badge>
+        )}
       </div>
       
       <CardContent className="p-5">
@@ -91,7 +108,7 @@ const CampaignCard = ({
             <div className="text-right">
               <div className="flex items-center text-sm text-gray-500">
                 <Clock className="h-3 w-3 mr-1" />
-                {daysLeft} days left
+                {isCampaignEnded ? "Campaign ended" : `${daysLeft} days left`}
               </div>
               <div className="text-sm text-gray-500">{backers} backers</div>
             </div>
@@ -99,18 +116,22 @@ const CampaignCard = ({
           
           <div className="flex space-x-2 pt-2">
             <Button 
-              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className={`flex-1 ${
+                isDisabled 
+                  ? "bg-gray-400 cursor-not-allowed" 
+                  : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              }`}
               onClick={(e) => {
                 e.stopPropagation();
-                if (creator?.email) {
+                if (!isDisabled && creator?.email) {
                   navigate(`/payment/${id}?creator=${encodeURIComponent(creator.email)}`);
-                } else {
+                } else if (!isDisabled) {
                   alert('Creator information not available');
                 }
               }}
-              disabled={raised >= goal}
+              disabled={isDisabled}
             >
-              {raised >= goal ? "Goal Achieved" : "Back This Project"}
+              {getButtonText()}
             </Button>
             <Button 
               variant="outline" 

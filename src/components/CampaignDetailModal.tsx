@@ -41,6 +41,17 @@ const CampaignDetailModal = ({ isOpen, onClose, campaign }: CampaignDetailModalP
   if (!campaign) return null;
 
   const progress = (campaign.raised / campaign.goal) * 100;
+  
+  // Check if campaign has ended
+  const isCampaignEnded = campaign.endDate ? new Date(campaign.endDate) < new Date() : false;
+  const isGoalAchieved = campaign.raised >= campaign.goal;
+  const isDisabled = isGoalAchieved || isCampaignEnded;
+  
+  const getButtonText = () => {
+    if (isGoalAchieved) return "Goal Achieved";
+    if (isCampaignEnded) return "Campaign Ended";
+    return "Back This Project";
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -114,18 +125,24 @@ const CampaignDetailModal = ({ isOpen, onClose, campaign }: CampaignDetailModalP
 
                         <div className="flex items-center text-sm text-gray-500">
                           <Clock className="h-4 w-4 mr-2" />
-                          {campaign.daysLeft} days left
+                          {isCampaignEnded ? "Campaign ended" : `${campaign.daysLeft} days left`}
                         </div>
 
                         <Button 
-                          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-sm md:text-lg py-2 md:py-3"
+                          className={`w-full text-sm md:text-lg py-2 md:py-3 ${
+                            isDisabled 
+                              ? "bg-gray-400 cursor-not-allowed" 
+                              : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                          }`}
                           onClick={() => {
-                            navigate(`/payment/${campaign.id}?creator=${encodeURIComponent(campaign.creator.email)}`);
-                            onClose();
+                            if (!isDisabled) {
+                              navigate(`/payment/${campaign.id}?creator=${encodeURIComponent(campaign.creator.email)}`);
+                              onClose();
+                            }
                           }}
-                          disabled={campaign.raised >= campaign.goal}
+                          disabled={isDisabled}
                         >
-                          {campaign.raised >= campaign.goal ? 'Goal Achieved' : 'Back This Project'}
+                          {getButtonText()}
                         </Button>
 
                         <div className="flex space-x-2">

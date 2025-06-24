@@ -12,6 +12,7 @@ import CreatePost from "../components/CreatePost";
 import { Button } from "../components/ui/button";
 import { ArrowRight, MapPin, MessageCircle, Plus, Filter } from "lucide-react";
 import { API_BASE_URL } from "../lib/api";
+import { useToast } from "../hooks/use-toast";
 
 interface CampaignCreator {
   name: string;
@@ -49,6 +50,17 @@ const Index = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Show notification about potential delay on initial load
+  useEffect(() => {
+    toast({
+      title: "⚠️ Important Notice",
+      description: "Users, it may take around 20-30 seconds to fetch data from backend as due to inactivity the backend server sleeps temporarily.",
+      duration: 15000, // Show for 15 seconds
+      className: "bg-yellow-50 border-yellow-200 text-yellow-800",
+    });
+  }, [toast]);
 
   // Wake up server on initial load
   useEffect(() => {

@@ -113,10 +113,24 @@ const CreateCampaign = () => {
 
     if (!formData.startDate) {
       newErrors.startDate = "Start date is required";
+    } else {
+      const startDate = new Date(formData.startDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to start of day
+      if (startDate < today) {
+        newErrors.startDate = "Start date cannot be in the past";
+      }
     }
 
     if (!formData.endDate) {
       newErrors.endDate = "End date is required";
+    } else {
+      const endDate = new Date(formData.endDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to start of day
+      if (endDate < today) {
+        newErrors.endDate = "End date cannot be in the past";
+      }
     }
 
     if (formData.startDate && formData.endDate) {
@@ -377,6 +391,7 @@ const CreateCampaign = () => {
                       onChange={(e) => handleInputChange('startDate', e.target.value)}
                       className={`pl-10 ${errors.startDate ? 'border-red-500' : ''}`}
                       disabled={isLoading}
+                      min={new Date().toISOString().split('T')[0]}
                     />
                   </div>
                   {errors.startDate && (
@@ -395,6 +410,7 @@ const CreateCampaign = () => {
                       onChange={(e) => handleInputChange('endDate', e.target.value)}
                       className={`pl-10 ${errors.endDate ? 'border-red-500' : ''}`}
                       disabled={isLoading}
+                      min={formData.startDate || new Date().toISOString().split('T')[0]}
                     />
                   </div>
                   {errors.endDate && (
@@ -405,7 +421,7 @@ const CreateCampaign = () => {
 
               {/* Campaign Image Upload */}
               <div className="space-y-2">
-                <Label htmlFor="image">Campaign Image (Optional)</Label>
+                <Label htmlFor="image">Campaign Image <sup>*</sup></Label>
                 <div className="relative">
                   <Upload className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <input
@@ -415,7 +431,7 @@ const CreateCampaign = () => {
                 
                   <button 
                     type="button" 
-                    className="bg-blue-500 text-white p-2 rounded-md" 
+                    className="bg-blue-500 text-white p-2 rounded-md mr-2" 
                     onClick={uploadImage}
                   >
                     Upload
