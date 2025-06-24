@@ -50,6 +50,13 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const navigate = useNavigate();
 
+  // Wake up server on initial load
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/auth/all-campaigns`, { method: 'GET' })
+      .then(() => console.log('Server wake-up ping sent'))
+      .catch(() => {});
+  }, []);
+
   // Fetch campaigns from backend on component mount
   useEffect(() => {
     const fetchCampaigns = async () => {
