@@ -387,7 +387,7 @@ const AdminPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-col sm:flex-row items-center gap-3 mb-4">
             <Shield className="h-8 w-8 text-blue-600" />
             <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
           </div>
@@ -435,7 +435,7 @@ const AdminPage = () => {
 
         {/* Navigation Tabs */}
         <div className="border-b border-gray-200 mb-6">
-          <nav className="-mb-px flex space-x-8">
+          <nav className="-mb-px flex space-x-8 overflow-x-auto whitespace-nowrap">
             {["campaigns", "users", "posts"].map((tab) => (
               <button
                 key={tab}
@@ -472,8 +472,8 @@ const AdminPage = () => {
             {filteredCampaigns.map((campaign) => (
               <Card key={campaign.id}>
                 <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 flex-1">
                       <img 
                         src={campaign.creator.avatar || "https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&w=150&q=80"} 
                         alt={campaign.creator.name}
@@ -505,7 +505,7 @@ const AdminPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mt-3 sm:mt-0">
                       <Button variant="outline" size="sm">
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -531,8 +531,8 @@ const AdminPage = () => {
             {filteredUsers.map((user) => (
               <Card key={user.id}>
                 <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 flex-1">
                       <img 
                         src={user.avatar} 
                         alt={user.name}
@@ -561,7 +561,7 @@ const AdminPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mt-3 sm:mt-0">
                       <Button variant="outline" size="sm">
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -597,8 +597,8 @@ const AdminPage = () => {
             {filteredPosts.map((post) => (
               <Card key={post.id}>
                 <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 flex-1">
                       <img 
                         src={post.authorAvatar} 
                         alt={post.authorName}
@@ -627,7 +627,7 @@ const AdminPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mt-3 sm:mt-0">
                       <Button variant="outline" size="sm">
                         <Eye className="h-4 w-4" />
                       </Button>

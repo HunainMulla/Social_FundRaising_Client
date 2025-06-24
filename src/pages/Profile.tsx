@@ -356,10 +356,10 @@ const ProfilePage = () => {
                 <div className="flex-1">
                   <div className="flex items-center space-x-4 mb-2">
                     <h1 className="text-3xl font-bold text-gray-900">{user.name}</h1>
-                    <Button variant="outline" size="sm">
+                    {/* <Button variant="outline" size="sm">
                       <Edit className="h-4 w-4 mr-2" />
                       Edit Profile
-                    </Button>
+                    </Button> */}
                   </div>
                   
                   <p className="text-gray-600 mb-4 max-w-2xl">{user.bio}</p>
