@@ -6,6 +6,7 @@ import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { API_BASE_URL } from "../lib/api";
 
 interface CreatePostProps {
   onPostCreated?: () => void;
@@ -105,7 +106,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
       }
 
       // Create post
-      const response = await fetch("http://localhost:3000/posts/create", {
+      const response = await fetch(`${API_BASE_URL}/posts/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

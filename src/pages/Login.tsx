@@ -5,6 +5,7 @@ import { Input } from "../components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Label } from "../components/ui/label";
 import { Eye, EyeOff, Mail, Lock, Heart } from "lucide-react";
+import { API_BASE_URL } from "../lib/api";
 
 interface LoginResponse {
   token: string;
@@ -80,7 +81,7 @@ const LoginPage = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch("http://localhost:3000/auth/login", { 
+      const response = await fetch(`${API_BASE_URL}/auth/login`, { 
         method: "POST",
         headers: { 
           "Content-Type": "application/json"
@@ -89,7 +90,6 @@ const LoginPage = () => {
       });
 
       const data = await response.json();
-      console.log("Login response:", data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Login failed');

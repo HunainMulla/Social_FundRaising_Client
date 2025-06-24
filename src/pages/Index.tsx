@@ -11,6 +11,7 @@ import Posts from "../components/Posts";
 import CreatePost from "../components/CreatePost";
 import { Button } from "../components/ui/button";
 import { ArrowRight, MapPin, MessageCircle, Plus, Filter } from "lucide-react";
+import { API_BASE_URL } from "../lib/api";
 
 interface CampaignCreator {
   name: string;
@@ -46,6 +47,7 @@ const Index = () => {
   const [error, setError] = useState("");
   const [refreshPosts, setRefreshPosts] = useState(0);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const navigate = useNavigate();
 
   // Fetch campaigns from backend on component mount
@@ -53,7 +55,7 @@ const Index = () => {
     const fetchCampaigns = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://localhost:3000/auth/all-campaigns");
+        const response = await fetch(`${API_BASE_URL}/auth/all-campaigns`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -104,6 +106,10 @@ const Index = () => {
     // Navigate to campaign creation page
     navigate("/create-campaign");
   };
+
+  const filteredCampaigns = selectedCategory === "All"
+    ? campaigns
+    : campaigns.filter(c => c.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -176,7 +182,7 @@ const Index = () => {
 
           {/* Sidebar - Hidden on mobile unless toggled */}
           <div className={`lg:col-span-1 ${showSidebar ? 'block' : 'hidden lg:block'} ${showSidebar ? 'mb-6' : ''}`}>
-            <CategoryFilter />
+            <CategoryFilter selectedCategory={selectedCategory} onCategoryChange={setSelectedCategory} />
           </div>
 
           {/* Campaigns Grid */}
@@ -243,7 +249,7 @@ const Index = () => {
             {!isLoading && !error && campaigns.length > 0 && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                  {campaigns.map((campaign) => (
+                  {filteredCampaigns.map((campaign) => (
                     <CampaignCard 
                       key={campaign.id} 
                       {...campaign} 

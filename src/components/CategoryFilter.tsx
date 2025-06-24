@@ -1,4 +1,3 @@
-
 import { Badge } from "./ui/badge";
 
 const categories = [
@@ -13,7 +12,12 @@ const categories = [
   "Animal Welfare"
 ];
 
-const CategoryFilter = () => {
+interface CategoryFilterProps {
+  selectedCategory: string;
+  onCategoryChange: (category: string) => void;
+}
+
+const CategoryFilter = ({ selectedCategory, onCategoryChange }: CategoryFilterProps) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border">
       <h3 className="font-semibold mb-4">Filter by Category</h3>
@@ -21,8 +25,9 @@ const CategoryFilter = () => {
         {categories.map((category) => (
           <Badge 
             key={category}
-            variant={category === "All" ? "default" : "outline"}
+            variant={category === selectedCategory ? "default" : "outline"}
             className="cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-colors"
+            onClick={() => onCategoryChange(category)}
           >
             {category}
           </Badge>

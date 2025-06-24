@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 import { Eye, EyeOff, Mail, Lock, User, Heart, MapPin, Camera, Phone } from "lucide-react";
+import { API_BASE_URL } from "../lib/api";
 
 const RegisterPage = () => {
   const [cloudinary, setCloudinary] = useState<String>("https://api.cloudinary.com/v1_1/dgbzv4qbb/image/upload");
@@ -107,7 +108,7 @@ const RegisterPage = () => {
     setSuccess("");
 
     try {
-      const response = await fetch("http://localhost:3000/auth/signup", {
+      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +127,7 @@ const RegisterPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess(data.message + " - " + data.token || "Registration successful! - " + data.token);
+        setSuccess(data.message || "Registration successful!");
         // Store user data if provided
         if (data.token) {
           localStorage.setItem('token', data.token);

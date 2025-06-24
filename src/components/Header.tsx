@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { Search, Bell, User, Heart, ChartBar, MessageCircle, LogOut, Menu, X } from "lucide-react";
+import { Search, Bell, User, Heart, ChartBar, MessageCircle, LogOut, Menu, X, Shield } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -59,6 +59,10 @@ const Header = () => {
 
   // Check if user is admin
   const isAdmin = user?.isAdmin === true;
+  
+  // Debug logging
+  console.log("Header - User data:", user);
+  console.log("Header - isAdmin:", isAdmin);
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -104,9 +108,9 @@ const Header = () => {
             </Link>
             {isAdmin && (
               <Link to="/admin">
-                <Button variant="ghost" size="sm">
-                  <ChartBar className="h-4 w-4 mr-2" />
-                  Admin
+                <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50">
+                  <Shield className="h-4 w-4 mr-2" />
+                  Admin Panel
                 </Button>
               </Link>
             )}
@@ -137,6 +141,11 @@ const Header = () => {
                         className="w-6 h-6 rounded-full mr-2"
                       /> */}
                       <span>{user.name}</span>
+                      {isAdmin && (
+                        <span className="ml-2 px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">
+                          Admin
+                        </span>
+                      )}
                     </Button>
                   </Link>
                   <Button 
@@ -214,9 +223,9 @@ const Header = () => {
               </Link>
               {isAdmin && (
                 <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button variant="ghost" size="sm" className="w-full justify-start">
-                    <ChartBar className="h-4 w-4 mr-2" />
-                    Admin
+                  <Button variant="ghost" size="sm" className="w-full justify-start text-purple-600 hover:text-purple-700 hover:bg-purple-50">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Admin Panel
                   </Button>
                 </Link>
               )}
@@ -251,6 +260,11 @@ const Header = () => {
                         }}
                       />
                       <span>{user.name}</span>
+                      {isAdmin && (
+                        <span className="ml-2 px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">
+                          Admin
+                        </span>
+                      )}
                     </Button>
                   </Link>
                   <Button 

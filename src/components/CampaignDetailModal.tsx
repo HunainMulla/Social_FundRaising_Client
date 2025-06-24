@@ -123,16 +123,13 @@ const CampaignDetailModal = ({ isOpen, onClose, campaign }: CampaignDetailModalP
                             navigate(`/payment/${campaign.id}?creator=${encodeURIComponent(campaign.creator.email)}`);
                             onClose();
                           }}
+                          disabled={campaign.raised >= campaign.goal}
                         >
-                          Back This Project
+                          {campaign.raised >= campaign.goal ? 'Goal Achieved' : 'Back This Project'}
                         </Button>
 
                         <div className="flex space-x-2">
-                          <Button variant="outline" className="flex-1 text-xs md:text-sm">
-                            <Heart className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                            Save
-                          </Button>
-                          <Button variant="outline" className="flex-1 text-xs md:text-sm">
+                          <Button variant="outline" className="flex-1 text-xs md:text-sm" disabled>
                             <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                             Share
                           </Button>

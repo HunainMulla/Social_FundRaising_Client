@@ -10,11 +10,14 @@ import ProfilePage from "./pages/Profile";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import AdminPage from "./pages/Admin";
+import AdminSetup from "./pages/AdminSetup";
 import CreateCampaign from "./pages/CreateCampaign";
 import AllCampaigns from "./pages/AllCampaigns";
 import Payment from "./pages/Payment";
 import NotFound from "./pages/NotFound";
 import Test from "./pages/Test";
+import ProtectedRoute from "./components/ProtectedRoute";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -31,7 +34,15 @@ const App = () => (
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="/admin-setup" element={<AdminSetup />} />
           <Route path="/create-campaign" element={<CreateCampaign />} />
           <Route path="/payment/:campaignId" element={<Payment />} />
           <Route path="/login-user" element={<Test />} />

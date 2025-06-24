@@ -7,6 +7,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Search, Filter, TrendingUp, Users, Calendar, Plus } from "lucide-react";
+import { API_BASE_URL } from "../lib/api";
 
 const PostsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,7 +39,7 @@ const PostsPage = () => {
   // Fetch stats from API
   const fetchStats = async () => {
     try {
-      const response = await fetch("http://localhost:3000/posts/stats");
+      const response = await fetch(`${API_BASE_URL}/posts/stats`);
       if (response.ok) {
         const data = await response.json();
         setStats({

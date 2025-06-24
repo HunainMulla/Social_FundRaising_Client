@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { Avatar } from "./ui/avatar";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { API_BASE_URL } from "../lib/api";
 
 interface Comment {
   id: string;
@@ -62,7 +63,7 @@ const Posts = ({ refreshTrigger, searchQuery = "", selectedCategory = "All", sor
   const fetchPosts = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:3000/posts/all?limit=10");
+      const response = await fetch(`${API_BASE_URL}/posts/all?limit=10`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -117,7 +118,7 @@ const Posts = ({ refreshTrigger, searchQuery = "", selectedCategory = "All", sor
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/posts/${postId}/like`, {
+      const response = await fetch(`${API_BASE_URL}/posts/${postId}/like`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -181,7 +182,7 @@ const Posts = ({ refreshTrigger, searchQuery = "", selectedCategory = "All", sor
     setLoadingComments(prev => new Set(prev).add(postId));
     
     try {
-      const response = await fetch(`http://localhost:3000/posts/${postId}/comments`);
+      const response = await fetch(`${API_BASE_URL}/posts/${postId}/comments`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -221,7 +222,7 @@ const Posts = ({ refreshTrigger, searchQuery = "", selectedCategory = "All", sor
     setSubmittingComment(postId);
 
     try {
-      const response = await fetch(`http://localhost:3000/posts/${postId}/comment`, {
+      const response = await fetch(`${API_BASE_URL}/posts/${postId}/comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -286,7 +287,7 @@ const Posts = ({ refreshTrigger, searchQuery = "", selectedCategory = "All", sor
     setDeletingPostId(postId);
 
     try {
-      const response = await fetch(`http://localhost:3000/posts/${postId}`, {
+      const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -447,8 +448,7 @@ const Posts = ({ refreshTrigger, searchQuery = "", selectedCategory = "All", sor
 
             {/* Content */}
             <div className="text-sm">
-              <span className="font-semibold mr-2">{post.authorName}</span>
-              {post.content}
+              {/* {post.content} */}
             </div>
 
             {/* Tags */}

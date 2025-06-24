@@ -27,6 +27,7 @@ import {
   Eye,
   EyeOff
 } from "lucide-react";
+import { API_BASE_URL } from "../lib/api";
 
 interface UserCampaign {
   id: string;
@@ -87,7 +88,7 @@ const ProfilePage = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:3000/protected/profile", {
+        const response = await fetch(`${API_BASE_URL}/protected/profile`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -188,7 +189,7 @@ const ProfilePage = () => {
       const token = localStorage.getItem("token");
       
       // First verify the password
-      const verifyResponse = await fetch("http://localhost:3000/auth/verify-password", {
+      const verifyResponse = await fetch(`${API_BASE_URL}/auth/verify-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -206,7 +207,7 @@ const ProfilePage = () => {
 
       // If password is correct, update the profile
       setIsUpdating(true);
-      const updateResponse = await fetch("http://localhost:3000/auth/update-profile", {
+      const updateResponse = await fetch(`${API_BASE_URL}/auth/update-profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -270,7 +271,7 @@ const ProfilePage = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/auth/delete-campaign/${campaignId}`, {
+      const response = await fetch(`${API_BASE_URL}/auth/delete-campaign/${campaignId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,

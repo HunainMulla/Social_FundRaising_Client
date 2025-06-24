@@ -8,6 +8,7 @@ import Footer from "../components/Footer";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Search, Filter, Grid, List, Plus } from "lucide-react";
+import { API_BASE_URL } from "../lib/api";
 
 interface CampaignCreator {
   name: string;
@@ -62,7 +63,7 @@ const AllCampaigns = () => {
     const fetchCampaigns = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://localhost:3000/auth/all-campaigns");
+        const response = await fetch(`${API_BASE_URL}/auth/all-campaigns`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

@@ -15,6 +15,7 @@ interface PaymentFormProps {
   onSubmit: (paymentMethod: any) => Promise<void>;
   isProcessing: boolean;
   error: string;
+  maxAmount?: number;
 }
 
 const CARD_ELEMENT_OPTIONS = {
@@ -41,7 +42,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   onMessageChange,
   onSubmit,
   isProcessing,
-  error
+  error,
+  maxAmount = 0
 }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -111,7 +113,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             type="number"
             min="1"
             step="0.01"
-            placeholder="Enter amount"
+            max={maxAmount > 0 ? maxAmount : undefined}
+            placeholder={`Enter amount (max $${maxAmount})`}
             value={amount}
             onChange={(e) => onAmountChange(e.target.value)}
             className="pl-10"

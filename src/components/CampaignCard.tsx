@@ -108,22 +108,14 @@ const CampaignCard = ({
                   alert('Creator information not available');
                 }
               }}
+              disabled={raised >= goal}
             >
-              Back This Project
+              {raised >= goal ? "Goal Achieved" : "Back This Project"}
             </Button>
             <Button 
               variant="outline" 
               size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                // Handle like action
-              }}
-            >
-              <Heart className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
+              disabled
               onClick={(e) => {
                 e.stopPropagation();
                 // Handle share action

@@ -16,6 +16,7 @@ import {
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from '../components/PaymentForm';
+import { API_BASE_URL } from "../lib/api";
 
 // Initialize Stripe
 const stripePromise = loadStripe('pk_test_51Qki3JCTFACjR68uzZq4NRHk8iFMm0OHTmm2qG68n22Rw89QmPNa2tPuThN96AQpLO7puzEGuqJo5xVkGKVeaIL3008HZ3EOjv');
@@ -73,7 +74,7 @@ const PaymentPage = () => {
     try {
       console.log('Fetching campaign data:', { campaignId, creatorEmail });
       
-      const response = await fetch(`http://localhost:3000/payments/campaign/${campaignId}/${creatorEmail}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/campaign/${campaignId}/${creatorEmail}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -98,7 +99,7 @@ const PaymentPage = () => {
 
   const createPaymentIntent = async (amount: number) => {
     try {
-      const response = await fetch('http://localhost:3000/payments/create-payment-intent', {
+      const response = await fetch(`${API_BASE_URL}/payments/create-payment-intent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ const PaymentPage = () => {
 
   const confirmPayment = async (paymentIntentId: string, amount: number) => {
     try {
-      const response = await fetch('http://localhost:3000/payments/confirm-payment', {
+      const response = await fetch(`${API_BASE_URL}/payments/confirm-payment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -256,6 +257,7 @@ const PaymentPage = () => {
   }
 
   const progressPercentage = (campaign.raised / campaign.goal) * 100;
+  const maxAmount = campaign ? Math.max(0, campaign.goal - campaign.raised) : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8 px-4">
@@ -379,11 +381,19 @@ const PaymentPage = () => {
                   <PaymentForm
                     amount={amount}
                     message={message}
-                    onAmountChange={setAmount}
+                    onAmountChange={(val) => {
+                      // Prevent entering more than maxAmount
+                      if (parseFloat(val) > maxAmount) {
+                        setAmount(maxAmount.toString());
+                      } else {
+                        setAmount(val);
+                      }
+                    }}
                     onMessageChange={setMessage}
                     onSubmit={handlePaymentSubmit}
                     isProcessing={isPaymentProcessing}
                     error={error}
+                    maxAmount={maxAmount}
                   />
                 </Elements>
               </CardContent>

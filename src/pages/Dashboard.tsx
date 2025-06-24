@@ -20,6 +20,7 @@ import {
   Eye
 } from "lucide-react";
 import Header from "../components/Header";
+import { API_BASE_URL } from "../lib/api";
 
 interface CampaignCreator {
   name: string;
@@ -92,7 +93,7 @@ const Dashboard = () => {
         }
 
         // Fetch user's campaigns
-        const campaignsResponse = await fetch("http://localhost:3000/auth/user-campaigns", {
+        const campaignsResponse = await fetch(`${API_BASE_URL}/auth/user-campaigns`, {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
