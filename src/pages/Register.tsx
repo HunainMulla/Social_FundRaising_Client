@@ -5,7 +5,7 @@ import { Input } from "../components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { Eye, EyeOff, Mail, Lock, User, Heart, MapPin, Camera, Phone } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Heart, MapPin, Camera, Phone, X, Upload } from "lucide-react";
 import { API_BASE_URL } from "../lib/api";
 
 const RegisterPage = () => {
@@ -360,32 +360,95 @@ const RegisterPage = () => {
                 )}
               </div>
 
-              {/* Avatar URL Field (Optional) */}
-              <div className="space-y-2">
-                <Label htmlFor="avatar">Profile Picture URL (Optional)</Label>
-                <div className="relative">
-                  <Camera className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  {/* <Input
-                    id="avatar"
-                    type="file"
-                    placeholder="Enter profile picture URL"
-                    value={avatar}
-                    onChange={(e) => handleInputChange('avatar', e.target.value)}
-                    disabled={isLoading}
-                  /> */}
-                  <input
-                    type="file"
-                    onChange={(e) => setImage(e.target.files[0])}
-                  />
-                
-                  {/* <br></br> */}
-                  <button type="button" className="bg-blue-500 text-white p-2 rounded-md" onClick={uploadImage}>Upload</button>
-                  <button type="button" className="bg-blue-500 text-white p-2 rounded-md" onClick={() => { setImage(null); setUrl('') }}>Clear</button>
-
-
-
+              {/* Profile Picture Upload */}
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-1">
+                    Profile Picture <span className="text-gray-500">(Optional)</span>
+                  </Label>
+                  <p className="text-xs text-gray-500 mb-2">
+                    Upload a clear photo of yourself (JPG, PNG, or GIF)
+                  </p>
                 </div>
-                <p className="text-gray-500 text-xs">Leave empty to use a default avatar</p>
+                
+                {url ? (
+                  <div className="mt-2">
+                    <div className="relative group">
+                      <img 
+                        src={url} 
+                        alt="Profile preview" 
+                        className="w-32 h-32 mx-auto rounded-full object-cover border-2 border-dashed border-gray-300"
+                      />
+                      <div className="absolute inset-0 rounded-full bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
+                        <button
+                          type="button"
+                          onClick={uploadImage}
+                          className="bg-white text-gray-800 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                          title="Change photo"
+                        >
+                          <Camera className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setImage(null); setUrl('') }}
+                          className="bg-white text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors"
+                          title="Remove photo"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-300 rounded-full w-32 h-32 mx-auto">
+                    <div className="space-y-1 text-center">
+                      <div className="flex justify-center">
+                        <Camera className="mx-auto h-8 w-8 text-gray-400" />
+                      </div>
+                      <div className="flex text-sm text-gray-600">
+                        <label
+                          htmlFor="file-upload"
+                          className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 mx-auto text-xs"
+                        >
+                          <span>Upload</span>
+                          <input
+                            id="file-upload"
+                            name="file-upload"
+                            type="file"
+                            className="sr-only"
+                            accept="image/*"
+                            onChange={(e) => e.target.files && e.target.files[0] && setImage(e.target.files[0])}
+                          />
+                        </label>
+                      </div>
+                      <p className="text-xs text-gray-500">or drag & drop</p>
+                    </div>
+                  </div>
+                )}
+                
+                {image && !url && (
+                  <div className="flex items-center justify-center space-x-2 mt-2">
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="sm"
+                      onClick={uploadImage}
+                      className="flex items-center space-x-1"
+                    >
+                      <Upload className="h-4 w-4" />
+                      <span>Upload Photo</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setImage(null)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                )}
+                <p className="text-xs text-gray-500 text-center mt-2">PNG, JPG, GIF up to 2MB</p>
               </div>
 
               {/* Terms and Conditions */}

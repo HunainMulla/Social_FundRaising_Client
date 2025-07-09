@@ -360,6 +360,97 @@ const CreateCampaign = () => {
                 )}
               </div>
 
+              {/* Campaign Image Upload */}
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-1">
+                    Campaign Image <span className="text-red-500">*</span>
+                  </Label>
+                  <p className="text-xs text-gray-500 mb-2">
+                    Upload a high-quality image that represents your campaign (JPG, PNG, or GIF)
+                  </p>
+                </div>
+                
+                {url ? (
+                  <div className="mt-2">
+                    <div className="relative group">
+                      <img 
+                        src={url} 
+                        alt="Campaign preview" 
+                        className="w-full h-48 object-cover rounded-lg border-2 border-dashed border-gray-300"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center space-x-2">
+                        <button
+                          type="button"
+                          onClick={uploadImage}
+                          className="bg-white text-gray-800 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                          title="Change image"
+                        >
+                          <Upload className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setImage(null); setUrl(''); }}
+                          className="bg-white text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors"
+                          title="Remove image"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-300 rounded-lg">
+                    <div className="space-y-1 text-center">
+                      <div className="flex justify-center">
+                        <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                      </div>
+                      <div className="flex text-sm text-gray-600">
+                        <label
+                          htmlFor="file-upload"
+                          className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 mx-auto"
+                        >
+                          <span>Upload a file</span>
+                          <input
+                            id="file-upload"
+                            name="file-upload"
+                            type="file"
+                            className="sr-only"
+                            accept="image/*"
+                            onChange={(e) => e.target.files && e.target.files[0] && setImage(e.target.files[0])}
+                          />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                      </div>
+                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
+                    </div>
+                  </div>
+                )}
+                
+                {image && !url && (
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="sm"
+                      onClick={uploadImage}
+                      className="flex items-center space-x-1"
+                    >
+                      <Upload className="h-4 w-4" />
+                      <span>Upload Selected Image</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setImage(null)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                )}
+              </div>
+
               {/* Location */}
               <div className="space-y-2">
                 <Label htmlFor="location">Location *</Label>
@@ -418,35 +509,6 @@ const CreateCampaign = () => {
                     <p className="text-red-500 text-sm">{errors.endDate}</p>
                   )}
                 </div>
-              </div>
-
-              {/* Campaign Image Upload */}
-              <div className="space-y-2">
-                <Label htmlFor="image">Campaign Image <sup>*</sup></Label>
-                <div className="relative">
-                  <Upload className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <input
-                    type="file"
-                    onChange={(e) => setImage(e.target.files[0])}
-                  />
-                
-                  <button 
-                    type="button" 
-                    className="bg-blue-500 text-white p-2 rounded-md mr-2" 
-                    onClick={uploadImage}
-                  >
-                    Upload
-                  </button>
-                  <button 
-                    type="button" 
-                    className="bg-blue-500 text-white p-2 rounded-md" 
-                    onClick={() => { setImage(null); setUrl('') }}
-                  >
-                    Clear
-                  </button>
-                </div>
-                <p className="text-gray-500 text-xs">Leave empty to use a default campaign image</p>
-                {url && <img src={url} alt="Campaign Image" className="w-full h-48 object-cover rounded-md" />}
               </div>
 
               {/* Submit Button */}
