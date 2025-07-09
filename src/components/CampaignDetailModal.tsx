@@ -60,13 +60,13 @@ const CampaignDetailModal = ({ isOpen, onClose, campaign }: CampaignDetailModalP
           <DialogHeader className="p-4 md:p-6 border-b flex-shrink-0">
             <DialogTitle className="flex items-center justify-between">
               <span className="text-xl md:text-2xl font-bold pr-4 line-clamp-2">{campaign.title}</span>
-              <Button variant="ghost" size="sm" onClick={onClose} className="flex-shrink-0">
+              {/* <Button variant="ghost" size="sm" onClick={onClose} className="flex-shrink-0">
                 <X className="h-5 w-5" />
-              </Button>
+              </Button> */}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto p-4 md:p-6">
+          <div className="flex- 1 overflow-y-auto p-4 md:p-6">
             <div className="space-y-6">
               {/* Main Image and Gallery */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
