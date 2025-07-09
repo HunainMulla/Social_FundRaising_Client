@@ -1,8 +1,10 @@
-import { Heart, Share2, MessageCircle, Clock, MapPin } from "lucide-react";
+import { Heart, Share2, MessageCircle, Clock, MapPin, Check } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 interface CampaignCardProps {
   id: string;
@@ -38,6 +40,7 @@ const CampaignCard = ({
   endDate
 }: CampaignCardProps) => {
   const navigate = useNavigate();
+  const [isCopied, setIsCopied] = useState(false);
   const progress = (raised / goal) * 100;
   
   const isCampaignEnded = endDate ? new Date(endDate) < new Date() : false;
@@ -136,13 +139,40 @@ const CampaignCard = ({
             <Button 
               variant="outline" 
               size="sm"
-              disabled
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
-                // Handle share action
+                try {
+                  const url = `${window.location.origin}/campaigns/${id}`;
+                  await navigator.clipboard.writeText(url);
+                  setIsCopied(true);
+                  toast.success('Campaign link copied to clipboard!');
+                  
+                  // Reset the copied state after 2 seconds
+                  setTimeout(() => {
+                    setIsCopied(false);
+                  }, 2000);
+                  
+                  // Try to use the Web Share API if available
+                  if (navigator.share) {
+                    await navigator.share({
+                      title: title,
+                      text: `Check out this campaign: ${title}`,
+                      url: url,
+                    });
+                  }
+                } catch (err) {
+                  console.error('Failed to share:', err);
+                  toast.error('Failed to share campaign. Please try again.');
+                }
               }}
+              className="relative overflow-hidden"
             >
-              <Share2 className="h-4 w-4" />
+              <div className={`flex items-center transition-transform duration-300 ${isCopied ? 'translate-y-[-100%]' : 'translate-y-0'}`}>
+                <Share2 className="h-4 w-4" />
+              </div>
+              <div className={`absolute inset-0 flex items-center justify-center transition-transform duration-300 ${isCopied ? 'translate-y-0' : 'translate-y-full'}`}>
+                <Check className="h-4 w-4 text-green-600" />
+              </div>
             </Button>
           </div>
         </div>

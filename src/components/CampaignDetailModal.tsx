@@ -1,8 +1,10 @@
-import { X, Heart, Share2, MessageCircle, Clock, MapPin, User, Mail, Phone, Calendar } from "lucide-react";
+import { X, Heart, Share2, MessageCircle, Clock, MapPin, User, Mail, Phone, Calendar, Check } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { useState } from "react";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 interface CampaignCreator {
@@ -36,6 +38,39 @@ interface CampaignDetailModalProps {
 }
 
 const CampaignDetailModal = ({ isOpen, onClose, campaign }: CampaignDetailModalProps) => {
+  const [isCopied, setIsCopied] = useState(false);
+  
+  const handleShare = async () => {
+    if (!campaign) return;
+    
+    try {
+      const url = `${window.location.origin}/campaigns/${campaign.id}`;
+      await navigator.clipboard.writeText(url);
+      setIsCopied(true);
+      toast.success('Campaign link copied to clipboard!');
+      
+      // Reset the copied state after 2 seconds
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+      
+      // Try to use the Web Share API if available
+      if (navigator.share) {
+        await navigator.share({
+          title: campaign.title,
+          text: `Check out this campaign: ${campaign.title}`,
+          url: url,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to share:', err);
+      if (!navigator.share) {
+        toast.error('Web Share API not supported. Link copied to clipboard.');
+      } else {
+        toast.error('Failed to share campaign. Please try again.');
+      }
+    }
+  };
   const navigate = useNavigate();
   
   if (!campaign) return null;
@@ -146,9 +181,22 @@ const CampaignDetailModal = ({ isOpen, onClose, campaign }: CampaignDetailModalP
                         </Button>
 
                         <div className="flex space-x-2">
-                          <Button variant="outline" className="flex-1 text-xs md:text-sm" disabled>
-                            <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                            Share
+                          <Button 
+                            variant="outline" 
+                            className="flex-1 text-xs md:text-sm relative overflow-hidden"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleShare();
+                            }}
+                          >
+                            <div className={`flex items-center justify-center transition-transform duration-300 ${isCopied ? 'translate-y-[-100%]' : 'translate-y-0'}`}>
+                              <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                              Share
+                            </div>
+                            <div className={`absolute inset-0 flex items-center justify-center transition-transform duration-300 ${isCopied ? 'translate-y-0' : 'translate-y-full'}`}>
+                              <Check className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 text-green-600" />
+                              Copied!
+                            </div>
                           </Button>
                         </div>
                       </div>
