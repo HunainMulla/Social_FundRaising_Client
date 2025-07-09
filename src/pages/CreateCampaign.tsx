@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
+import { API_BASE_URL } from "../lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Label } from "../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
@@ -215,7 +216,7 @@ const CreateCampaign = () => {
       };
 
       // Add campaign to user's campaigns array
-      const response = await fetch(`http://localhost:3000/auth/add-campaign`, {
+      const response = await fetch(`${API_BASE_URL}/auth/add-campaign`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -251,9 +252,9 @@ const CreateCampaign = () => {
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center space-x-2 mb-4">
+          <div className="inline-flex items-center space-x-[-10px] md:space-x-2 mb-4">
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl">
-              <Heart className="h-8 w-8" />
+              <Heart className="h-8 w-8 " />
             </div>
             <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Create Your Campaign
