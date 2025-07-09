@@ -135,11 +135,11 @@ const Header = () => {
                 <div className="flex items-center space-x-2">
                   <Link to="/profile">
                     <Button variant="ghost" size="sm" className="flex items-center">
-                      <img 
+                      {/* <img 
                         src="https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&w=150&q=80" 
                         alt={user.name}
                         className="w-6 h-6 rounded-full mr-2"
-                      />
+                      /> */}
                       <span>{user.name}</span>
                       {isAdmin && (
                         <span className="ml-2 px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">
