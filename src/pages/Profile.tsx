@@ -364,39 +364,39 @@ const ProfilePage = () => {
                   
                   <p className="text-gray-600 mb-4 max-w-2xl">{user.bio}</p>
                   
-                  <div className="flex flex-wrap items-center space-x-6 text-sm text-gray-500">
+                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-500 sm:flex sm:flex-wrap sm:space-x-6">
                     <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {user.location}
+                      <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                      <span className="truncate">{user.location}</span>
                     </div>
                     <div className="flex items-center">
-                      <Mail className="h-4 w-4 mr-1" />
-                      {user.email}
+                      <Mail className="h-4 w-4 mr-1 flex-shrink-0" />
+                      <span className="truncate">{user.email}</span>
                     </div>
                     <div className="flex items-center">
-                      <Phone className="h-4 w-4 mr-1" />
-                      {user.phone}
+                      <Phone className="h-4 w-4 mr-1 flex-shrink-0" />
+                      <span className="truncate">{user.phone}</span>
                     </div>
                     <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      Joined {user.joinedDate}
+                      <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
+                      <span>Joined {user.joinedDate}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-6 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-blue-600">{user.totalCampaigns}</div>
-                    <div className="text-sm text-gray-500">Campaigns</div>
+                <div className="w-full mt-4 md:mt-0 md:w-auto grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 text-center">
+                  <div className="p-2 bg-gray-50 rounded-lg">
+                    <div className="text-lg md:text-xl font-bold text-blue-600">{user.totalCampaigns}</div>
+                    <div className="text-xs md:text-sm text-gray-500">Campaigns</div>
                   </div>
-                  <div>
-                    <div className="text-2xl font-bold text-green-600">${user.totalRaised.toLocaleString()}</div>
-                    <div className="text-sm text-gray-500">Total Raised</div>
+                  <div className="p-2 bg-gray-50 rounded-lg">
+                    <div className="text-lg md:text-xl font-bold text-green-600">${user.totalRaised.toLocaleString()}</div>
+                    <div className="text-xs md:text-sm text-gray-500">Total Raised</div>
                   </div>
-                  <div>
-                    <div className="text-2xl font-bold text-purple-600">{user.totalBackers}</div>
-                    <div className="text-sm text-gray-500">Total Backers</div>
+                  <div className="p-2 bg-gray-50 rounded-lg">
+                    <div className="text-lg md:text-xl font-bold text-purple-600">{user.totalBackers}</div>
+                    <div className="text-xs md:text-sm text-gray-500">Total Backers</div>
                   </div>
                 </div>
               </div>

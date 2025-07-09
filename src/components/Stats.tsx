@@ -5,7 +5,7 @@ const Stats = () => {
   const stats = [
     {
       icon: DollarSign,
-      value: "$2.4M",
+      value: "$2.4L",
       label: "Total Raised",
       color: "text-green-600"
     },
