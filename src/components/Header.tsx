@@ -241,13 +241,13 @@ const Header = () => {
               
               {user ? (
                 <>
-                  <Button variant="ghost" size="sm" className="w-full justify-start relative">
+                  {/* <Button variant="ghost" size="sm" className="w-full justify-start relative">
                     <Bell className="h-4 w-4 mr-2" />
                     Notifications
                     <span className="absolute right-4 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       3
                     </span>
-                  </Button>
+                  </Button> */}
                   <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="ghost" size="sm" className="w-full justify-start">
                       <img 
