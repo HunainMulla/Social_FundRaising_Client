@@ -434,7 +434,7 @@ const ProfilePage = () => {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">My Campaigns</h2>
                 <Link to="/create-campaign">
-                  <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  <Button className="bg-yellow-500 hover:bg-yellow-600">
                     <Plus className="h-4 w-4 mr-2" />
                     Create New Campaign
                   </Button>
@@ -493,7 +493,7 @@ const ProfilePage = () => {
                 <Heart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500">You haven't backed any campaigns yet.</p>
                 <Link to="/">
-                  <Button className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  <Button className="mt-4 bg-yellow-500 hover:bg-yellow-600">
                     Explore Campaigns
                   </Button>
                 </Link>
@@ -561,7 +561,7 @@ const ProfilePage = () => {
 
                     <div className="flex justify-end space-x-4">
                       <Button variant="outline" onClick={handleCancelEdit}>Cancel</Button>
-                      <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" onClick={handleSaveChanges}>
+                      <Button className="bg-yellow-500 hover:bg-yellow-600" onClick={handleSaveChanges}>
                         Save Changes
                       </Button>
                     </div>
