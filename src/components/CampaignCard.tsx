@@ -97,7 +97,7 @@ const CampaignCard = ({
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
-                className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full transition-all duration-500"
+                className="bg-yellow-500 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${Math.min(progress, 100)}%` }}
               />
             </div>
@@ -122,7 +122,7 @@ const CampaignCard = ({
               className={`flex-1 ${
                 isDisabled 
                   ? "bg-gray-400 cursor-not-allowed" 
-                  : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  : "bg-yellow-500 hover:bg-yellow-600"
               }`}
               onClick={(e) => {
                 e.stopPropagation();

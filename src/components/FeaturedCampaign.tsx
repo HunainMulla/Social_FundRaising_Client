@@ -7,7 +7,7 @@ const FeaturedCampaign = () => {
   const progress = 100;
   
   return (
-    <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
+    <Card className="bg-yellow-50 border-2 border-yellow-200">
       <CardContent className="p-0">
         <div className="grid md:grid-cols-2 gap-6 items-center">
           <div className="p-6">
@@ -31,7 +31,7 @@ const FeaturedCampaign = () => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
                   <div 
-                    className="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full"
+                    className="bg-yellow-500 h-3 rounded-full"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -62,14 +62,14 @@ const FeaturedCampaign = () => {
               </div>
             </div>
             
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg py-3" disabled={true}>
+            <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-lg py-3" disabled={true}>
               Goal Achieved
             </Button>
           </div>
           
           <div className="p-6">
             <img 
-              src="https://img.freepik.com/premium-photo/group-happy-playful-indian-children-running-outdoors-park-asian-kids-playing-garden_979520-4959.jpg"
+              src="https://en-media.thebetterindia.com/uploads/2023/07/Anthill-Playground-5-1689948285.jpg"
               alt="Children playing on playground"
               className="w-full h-64 object-cover rounded-lg shadow-lg"
             />

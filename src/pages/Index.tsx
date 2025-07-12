@@ -135,18 +135,18 @@ const Index = () => {
       <Header />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white py-12 md:py-16">
+      <section className="bg-yellow-500 text-white py-12 md:py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight">
             Fund What Matters <br />
-            <span className="text-blue-200">In Your Community</span>
+            <span className="text-yellow-100">In Your Community</span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 max-w-3xl mx-auto text-blue-100 px-4">
+          <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 max-w-3xl mx-auto text-yellow-100 px-4">
             Discover and support local causes that make a real difference in your neighborhood
           </p>
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
             <Link to="/campaigns">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 text-base md:text-lg px-6 md:px-8 w-full sm:w-auto">
+              <Button size="lg" className="bg-white text-yellow-600 hover:bg-yellow-50 text-base md:text-lg px-6 md:px-8 w-full sm:w-auto">
                 Explore Campaigns
                 <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
               </Button>
@@ -154,7 +154,7 @@ const Index = () => {
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-white text-blue-600 hover:bg-white hover:text-blue-600 text-base md:text-lg px-6 md:px-8 w-full sm:w-auto"
+              className="border-white text-yellow-600 hover:bg-yellow-600 text-base md:text-lg px-6 md:px-8 w-full sm:w-auto"
               onClick={handleCreateCampaign}
             >
               <Plus className="mr-2 h-4 w-4 md:h-5 md:w-5" />
@@ -325,7 +325,7 @@ const Index = () => {
       <Stats />
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12 md:py-16">
+      <section className="bg-yellow-500 text-white py-12 md:py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Ready to Make a Difference?</h2>
           <p className="text-lg md:text-xl mb-6 md:mb-8 max-w-2xl mx-auto px-4">

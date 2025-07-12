@@ -70,10 +70,12 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-              <Heart className="h-6 w-6" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <img 
+              src="https://cdn-icons-png.flaticon.com/512/3662/3662580.png" 
+              alt="LocalFund Logo"
+              className="h-10 w-10"
+            />
+            <span className="text-xl font-bold text-yellow-600">
               LocalFund
             </span>
           </Link>
@@ -166,7 +168,7 @@ const Header = () => {
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600">
                     Sign Up
                   </Button>
                 </Link>
@@ -285,7 +287,7 @@ const Header = () => {
                     </Button>
                   </Link>
                   <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button size="sm" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                    <Button size="sm" className="w-full bg-yellow-500 hover:bg-yellow-600">
                       Sign Up
                     </Button>
                   </Link>

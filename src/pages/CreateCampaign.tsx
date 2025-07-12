@@ -253,10 +253,12 @@ const CreateCampaign = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-[-10px] md:space-x-2 mb-4">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl">
-              <Heart className="h-8 w-8 " />
-            </div>
-            <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <img 
+              src="https://cdn-icons-png.flaticon.com/512/3662/3662580.png" 
+              alt="LocalFund Logo"
+              className="h-12 w-12"
+            />
+            <span className="text-3xl font-bold text-yellow-600">
               Create Your Campaign
             </span>
           </div>
@@ -524,7 +526,7 @@ const CreateCampaign = () => {
                 </Button>
                 <Button
                   type="submit"
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="flex-1 bg-yellow-500 hover:bg-yellow-600"
                   disabled={isLoading}
                 >
                   {isLoading ? "Creating Campaign..." : "Create Campaign"}

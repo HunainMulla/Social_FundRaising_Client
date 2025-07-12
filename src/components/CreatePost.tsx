@@ -171,7 +171,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
         <CardContent className="p-4">
           <Button 
             onClick={() => setIsCreating(true)}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            className="w-full bg-yellow-500 hover:bg-yellow-600"
           >
             <Plus className="h-4 w-4 mr-2" />
             Create New Post
@@ -327,7 +327,7 @@ const CreatePost = ({ onPostCreated }: CreatePostProps) => {
           <Button 
             onClick={handlePost}
             disabled={!title.trim() || !content.trim() || isLoading}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            className="flex-1 bg-yellow-500 hover:bg-yellow-600"
           >
             {isLoading ? (
               <>

@@ -139,15 +139,17 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-yellow-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl">
-              <Heart className="h-8 w-8" />
-            </div>
-            <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <img 
+              src="https://cdn-icons-png.flaticon.com/512/3662/3662580.png" 
+              alt="LocalFund Logo"
+              className="h-12 w-12"
+            />
+            <span className="text-3xl font-bold text-yellow-600">
               LocalFund
             </span>
           </Link>
@@ -239,7 +241,7 @@ const LoginPage = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
