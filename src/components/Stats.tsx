@@ -11,13 +11,13 @@ const Stats = () => {
     },
     {
       icon: Users,
-      value: "15,432",
+      value: "152+",
       label: "Community Members",
       color: "text-blue-600"
     },
     {
       icon: TrendingUp,
-      value: "342",
+      value: "12",
       label: "Active Campaigns",
       color: "text-purple-600"
     },

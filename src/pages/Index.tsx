@@ -217,7 +217,7 @@ const Index = () => {
                 </select>
                 <Button 
                   onClick={handleCreateCampaign}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm md:text-base px-4 md:px-6"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm md:text-base px-4 md:px-6"
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   <span className="hidden sm:inline">Create Campaign</span>
