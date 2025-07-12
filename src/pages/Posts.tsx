@@ -75,7 +75,7 @@ const PostsPage = () => {
               </div>
               <Button 
                 onClick={() => setShowCreatePost(!showCreatePost)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="bg-yellow-500 hover:bg-yellow-600"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Post

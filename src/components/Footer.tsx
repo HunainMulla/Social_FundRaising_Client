@@ -8,9 +8,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-                <MapPin className="h-5 w-5" />
-              </div>
+           
               <div>
                 <h3 className="text-lg font-bold">LocalFund</h3>
                 <p className="text-xs text-gray-400">Community Crowdfunding</p>

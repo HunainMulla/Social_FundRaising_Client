@@ -255,7 +255,7 @@ const AllCampaigns = () => {
                 </p>
                 <Button 
                   onClick={handleCreateCampaign}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="w-full  bg-yellow-500 hover:bg-yellow-600"
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   Create Campaign
